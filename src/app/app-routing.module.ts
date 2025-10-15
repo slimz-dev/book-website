@@ -5,14 +5,19 @@ import { AboutComponent } from './about/about.component';
 import { ContactComponent } from './contact/contact.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  {
+    path: '',
+    loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
+  },
   {
     path: 'about',
-    component: AboutComponent,
+    loadChildren: () =>
+      import('./about/about.module').then((m) => m.AboutModule),
   },
   {
     path: 'contact',
-    component: ContactComponent,
+    loadChildren: () =>
+      import('./contact/contact.module').then((m) => m.ContactModule),
   },
 ];
 

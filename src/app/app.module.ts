@@ -7,11 +7,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
-import { HomeModule } from './home/home.module';
 import { NavBarComponent } from './component/navbar/navbar.component';
-import { BookCardComponent } from './home/components/book-card/book-card.component';
-import { BookModalComponent } from './home/components/book-modal/book-modal.component';
-import { HomeComponent } from './home/home.component';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { StateModule } from './state/state.module';
 
 @NgModule({
   declarations: [AppComponent, NavBarComponent],
@@ -22,6 +22,12 @@ import { HomeComponent } from './home/home.component';
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
     AppRoutingModule,
+    StoreDevtoolsModule.instrument({
+      maxAge: 25, // Retains last 25 states
+    }),
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
+    StateModule,
   ],
   bootstrap: [AppComponent],
 })

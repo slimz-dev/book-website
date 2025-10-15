@@ -4,12 +4,16 @@ import { z } from 'zod';
 import { ToastService } from 'src/app/services/toast.service';
 import { Book } from '../models/book';
 import { BookService } from '../services/book.service';
+import { loadBooks } from '../state/book/book.actions';
+import { Store } from '@ngrx/store';
+import { selectBooks } from '../state/book/book.selectors';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
+  hi = this.store.select(selectBooks);
   books: Book[] = [];
   showModal = false;
   selectedBook: Book | null = null;
@@ -21,19 +25,29 @@ export class HomeComponent implements OnInit {
     url: z.string(),
     description: z.string(),
   });
-  constructor(private bookService: BookService, private toast: ToastService) {}
+  constructor(
+    private store: Store,
+    private bookService: BookService,
+    private toast: ToastService
+  ) {}
 
+  ngDoCheck(): void {
+    this.hi.subscribe((data) => console.log(data));
+  }
   ngOnInit(): void {
+    this.store.dispatch(loadBooks());
     this.bookService.getBooks().subscribe({
-      next: (books: unknown) => {
-        const parsed = this.BookSchema.array().safeParse(books);
-        if (parsed.success) {
-          this.books = parsed.data;
-        } else {
-          console.error('Validation failed:', parsed.error);
-        }
+      next: (books: Book[]) => {
+        this.books = books;
+      },
+      error: (err) => {
+        console.log(err);
+        this.toast.showError(err.error || 'Unknown error occurred');
       },
     });
+    // this.store.select('books').subscribe((state: any) => {
+    //   this.books = state.books;
+    // });
   }
 
   openAddModal() {
