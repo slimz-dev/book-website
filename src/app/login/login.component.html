@@ -1,0 +1,55 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center mb-6">Login</h1>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      <div class="p-field">
+        <label for="userName" class="block text-gray-700 mb-1">Username</label>
+        <input
+          id="userName"
+          type="text"
+          pInputText
+          formControlName="userName"
+          class="w-full"
+        />
+        <div
+          *ngIf="submitted && f.userName.errors"
+          class="text-red-500 text-sm mt-1"
+        >
+          Username is required
+        </div>
+      </div>
+
+      <div class="p-field">
+        <label for="password" class="block text-gray-700 mb-1">Password</label>
+        <input
+          id="password"
+          type="password"
+          pPassword
+          formControlName="password"
+          class="w-full"
+        />
+        <div
+          *ngIf="submitted && f.password.errors"
+          class="text-red-500 text-sm mt-1"
+        >
+          Password is required
+        </div>
+      </div>
+
+      <button
+        pButton
+        type="submit"
+        label="Login"
+        class="w-full p-button-primary text-black text-xl"
+      ></button>
+    </form>
+
+    <p class="text-center mt-4 text-gray-600">
+      Don't have an account?
+      <button (click)="goToRegister()" class="text-blue-500 hover:underline">
+        Register
+      </button>
+    </p>
+  </div>
+</div>

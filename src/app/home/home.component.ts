@@ -1,20 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 
-import { z } from 'zod';
+import { map, z } from 'zod';
 import { ToastService } from 'src/app/services/toast.service';
 import { Book } from '../models/book';
 import { BookService } from '../services/book.service';
-import { loadBooks } from '../state/book/book.actions';
+import BookActions from '../state/book/book.actions';
 import { Store } from '@ngrx/store';
 import { selectBooks } from '../state/book/book.selectors';
+import { Observable } from 'rxjs';
+import { UserService } from '../services/user.service';
+import { StorageService } from '../services/storage.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit {
-  hi = this.store.select(selectBooks);
-  books: Book[] = [];
+  books$: Observable<Book[]> = this.store.select(selectBooks);
   showModal = false;
   selectedBook: Book | null = null;
   BookSchema = z.object({
@@ -25,29 +27,10 @@ export class HomeComponent implements OnInit {
     url: z.string(),
     description: z.string(),
   });
-  constructor(
-    private store: Store,
-    private bookService: BookService,
-    private toast: ToastService
-  ) {}
+  constructor(private store: Store) {}
 
-  ngDoCheck(): void {
-    this.hi.subscribe((data) => console.log(data));
-  }
   ngOnInit(): void {
-    this.store.dispatch(loadBooks());
-    this.bookService.getBooks().subscribe({
-      next: (books: Book[]) => {
-        this.books = books;
-      },
-      error: (err) => {
-        console.log(err);
-        this.toast.showError(err.error || 'Unknown error occurred');
-      },
-    });
-    // this.store.select('books').subscribe((state: any) => {
-    //   this.books = state.books;
-    // });
+    this.store.dispatch(BookActions.loadBooks());
   }
 
   openAddModal() {
@@ -61,44 +44,15 @@ export class HomeComponent implements OnInit {
   };
 
   handleSave(book: Book) {
-    this.bookService.addBook(book).subscribe({
-      next: (newBook: Book) => {
-        this.toast.showSuccess('Book added successfully');
-        this.books.push(newBook);
-        this.showModal = false;
-      },
-      error: (err: any) => {
-        this.toast.showError(err.error || 'Unknown error occurred');
-      },
-    });
+    this.store.dispatch(BookActions.tryAddBook({ book }));
+    //  this.store.
   }
   handleDelete(book: Book) {
-    this.bookService.deleteBook(book.id).subscribe({
-      next: () => {
-        this.toast.showSuccess('Book deleted successfully');
-        this.books = this.books.filter((b) => b.id !== book.id);
-      },
-      error: (err) => {
-        console.log(err);
-        this.toast.showError(err.error || 'Unknown error occurred');
-      },
-    });
+    this.store.dispatch(BookActions.tryRemoveBook({ id: book.id }));
   }
 
   handleChange(book: Book) {
-    this.bookService.patchingBook(book).subscribe({
-      next: (updatedBook: Book) => {
-        this.toast.showSuccess('Book updated successfully');
-        const index = this.books.findIndex((b) => b.id === updatedBook.id);
-        if (index !== -1) {
-          this.books[index] = updatedBook;
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.toast.showError(err.error || 'Unknown error occurred');
-      },
-    });
+    this.store.dispatch(BookActions.tryChangeBook({ book }));
   }
 
   closeModal() {

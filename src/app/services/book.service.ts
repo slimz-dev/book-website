@@ -8,18 +8,30 @@ import { ToastService } from './toast.service';
   providedIn: 'root',
 })
 export class BookService {
-  private apiUrl = 'http://localhost:5000/api';
+  private apiUrl = 'https://localhost:5000/api';
   constructor(private httpService: HttpClient, private toast: ToastService) {}
   getBooks(): Observable<Book[]> {
-    return this.httpService.get<Book[]>(`${this.apiUrl}/books`);
+    return this.httpService.get<Book[]>(`${this.apiUrl}/books`, {
+      headers: {
+        'No-Auth': 'true',
+      },
+    });
   }
 
   addBook(book: Book): Observable<Book> {
-    return this.httpService.post<Book>(`${this.apiUrl}/books`, book);
+    return this.httpService.post<Book>(`${this.apiUrl}/books`, book, {
+      headers: {
+        'No-Auth': 'true',
+      },
+    });
   }
 
   deleteBook(id: number): Observable<void> {
-    return this.httpService.delete<void>(`${this.apiUrl}/books/?Id=${id}`);
+    return this.httpService.delete<void>(`${this.apiUrl}/books/?Id=${id}`, {
+      headers: {
+        'No-Auth': 'true',
+      },
+    });
   }
 
   patchingBook(book: Book): Observable<Book> {
@@ -40,6 +52,7 @@ export class BookService {
         headers: {
           'Content-Type': 'application/json-patch+json',
           Accept: 'application/json',
+          'No-Auth': 'true',
         },
       }
     );

@@ -1,10 +1,25 @@
-<nav
-  class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow"
->
-  <h1 class="text-xl font-bold">My Bookstore</h1>
-  <ul class="flex gap-6 text-sm">
-    <li><a routerLink="/" class="hover:text-blue-200">Home</a></li>
-    <li><a routerLink="/about" class="hover:text-blue-200">About</a></li>
-    <li><a routerLink="/contact" class="hover:text-blue-200">Contact</a></li>
-  </ul>
-</nav>
+<div>
+  <nav
+    class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow"
+  >
+    <h1 class="text-xl font-bold">My Bookstore</h1>
+    <ul class="flex gap-6 text-sm items-center">
+      <li><a routerLink="/" class="hover:text-blue-200">Home</a></li>
+      <li><a routerLink="/about" class="hover:text-blue-200">About</a></li>
+      <li><a routerLink="/contact" class="hover:text-blue-200">Contact</a></li>
+      <div (mouseenter)="menu.toggle($event)">
+        <p-avatar
+          class="cursor-pointer relative"
+          [image]="(user$ | async)?.imgUrl || 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'"
+          shape="circle"
+        >
+        </p-avatar>
+      </div>
+    </ul>
+  </nav>
+  <p-menu
+    #menu
+    [model]="(user$ | async) ? loggedInItems : loggedOutItems"
+    [popup]="true"
+  ></p-menu>
+</div>
